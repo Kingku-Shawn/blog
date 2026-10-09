@@ -95,6 +95,21 @@
   .modal input, .modal select, .modal textarea { width: 100%; padding: 9px 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text); outline: none; font-family: inherit; font-size: 13.5px; }
   .modal input:focus, .modal select:focus, .modal textarea:focus { border-color: var(--accent); }
   .modal textarea { min-height: 140px; resize: vertical; }
+  .rte-wrap { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: var(--bg); }
+  .rte-bar { display: flex; flex-wrap: wrap; gap: 3px; background: var(--bg); padding: 6px 8px; border-bottom: 1px solid var(--border); align-items: center; }
+  .rte-bar button { background: transparent; border: 1px solid transparent; border-radius: 6px; padding: 4px 9px; font-size: 13px; color: var(--text); cursor: pointer; line-height: 1.3; }
+  .rte-bar button:hover { background: var(--border); border-color: var(--border); }
+  .rte-sep { width: 1px; height: 18px; background: var(--border); margin: 0 5px; display: inline-block; }
+  .rte-editor { min-height: 280px; max-height: 480px; overflow-y: auto; background: #fff; color: #1e293b; padding: 14px; font-size: 14.5px; line-height: 1.8; outline: none; }
+  .rte-editor img { max-width: 100%; border-radius: 6px; }
+  .rte-editor video { max-width: 100%; border-radius: 6px; }
+  .rte-editor audio { width: 100%; }
+  .rte-editor:empty:before { content: attr(data-placeholder); color: #94a3b8; }
+  .rte-editor blockquote { border-left: 3px solid #94a3b8; margin: 8px 0; padding: 2px 12px; color: #475569; }
+  .rte-editor pre { background: #f1f5f9; border-radius: 6px; padding: 10px; overflow-x: auto; }
+  .rte-editor a { color: #2563eb; }
+  .tag-chip-new { display: inline-flex; align-items: center; gap: 6px; background: rgba(37,99,235,.15); color: var(--accent); border: 1px solid var(--accent); border-radius: 999px; padding: 3px 10px; font-size: 12px; margin: 3px 6px 3px 0; }
+  .tag-chip-new .x { cursor: pointer; color: var(--danger); font-weight: 700; }
   .modal .row2 { display: flex; gap: 14px; }
   .modal .row2 > div { flex: 1; }
   .modal .actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 22px; }
@@ -339,17 +354,50 @@ async function editPost(id) {
   const curTags = {}; pre.tags.forEach(t => curTags[t] = 1);
   const curCols = {}; pre.columns.forEach(c => curCols[c] = 1);
   const tagBoxes = tagAll.map(t =>
-    `<label style="display:inline-flex;align-items:center;gap:6px;margin:4px 10px 4px 0;font-size:13px"><input type="checkbox" class="ptag" value="${t.id}" ${curTags[t.name] ? "checked" : ""}> ${esc(t.name)}</label>`).join("") || `<div class="muted">暂无标签，可先到「标签管理」创建</div>`;
+    `<label style="display:inline-flex;align-items:center;gap:6px;margin:4px 10px 4px 0;font-size:13px"><input type="checkbox" class="ptag" value="${t.id}" data-name="${esc(t.name)}" ${curTags[t.name] ? "checked" : ""}> ${esc(t.name)}</label>`).join("") || `<div class="muted">暂无标签，可直接在下方用 # 前缀创建</div>`;
   const colBoxes = colAll.map(c =>
     `<label style="display:inline-flex;align-items:center;gap:6px;margin:4px 10px 4px 0;font-size:13px"><input type="checkbox" class="pcol" value="${c.id}" ${curCols[c.name] ? "checked" : ""}> ${esc(c.name)}</label>`).join("") || `<div class="muted">暂无分栏，可先到「分栏管理」创建</div>`;
   openModal(`
     <h3>${id ? "编辑文章" : "新建文章"}</h3>
     <label>标题</label><input id="f_title" value="${esc(pre.title)}">
     <label>分类</label><select id="f_cat"><option value="">未分类</option>${catOpts}</select>
-    <label>标签（分类即 #标签）</label><div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px">${tagBoxes}</div>
+    <label>标签（可用 # 前缀自定义生成新标签）</label><div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px">
+      ${tagBoxes}<div id="f_newTags"></div>
+      <div style="margin-top:8px;display:flex;gap:6px;align-items:center">
+        <input id="f_tagInput" placeholder="输入 #标签 或 标签名后点添加/回车" style="flex:1">
+        <button type="button" class="btn btn-sm" onclick="addCustomTag()">添加</button>
+      </div>
+    </div>
     <label>分栏</label><div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px">${colBoxes}</div>
     <label>摘要</label><input id="f_summary" value="${esc(pre.summary)}">
-    <label>正文</label><textarea id="f_content">${esc(pre.content)}</textarea>
+    <label>正文（图文编辑，图片/音频/视频支持本地上传）</label>
+    <div class="rte-wrap">
+      <div class="rte-bar" id="rte_bar">
+        <button type="button" data-cmd="bold" title="加粗"><b>B</b></button>
+        <button type="button" data-cmd="italic" title="斜体"><i>I</i></button>
+        <button type="button" data-cmd="underline" title="下划线"><u>U</u></button>
+        <button type="button" data-cmd="strikeThrough" title="删除线"><s>S</s></button>
+        <span class="rte-sep"></span>
+        <button type="button" data-cmd="formatBlock" data-val="H2" title="二级标题">H2</button>
+        <button type="button" data-cmd="formatBlock" data-val="H3" title="三级标题">H3</button>
+        <button type="button" data-cmd="formatBlock" data-val="P" title="段落">P</button>
+        <span class="rte-sep"></span>
+        <button type="button" data-cmd="insertUnorderedList" title="无序列表">• 列表</button>
+        <button type="button" data-cmd="insertOrderedList" title="有序列表">1. 列表</button>
+        <button type="button" data-cmd="formatBlock" data-val="BLOCKQUOTE" title="引用">❝ 引用</button>
+        <button type="button" data-cmd="formatBlock" data-val="PRE" title="代码块">&lt;/&gt; 代码</button>
+        <span class="rte-sep"></span>
+        <button type="button" onclick="rteLink()" title="插入链接">🔗 链接</button>
+        <button type="button" onclick="rteMedia('image')" title="插入图片（本地上传）">🖼 图片</button>
+        <button type="button" onclick="rteMedia('audio')" title="插入音频（本地上传）">🎵 音频</button>
+        <button type="button" onclick="rteMedia('video')" title="插入视频（本地上传）">🎬 视频</button>
+        <span class="rte-sep"></span>
+        <button type="button" onclick="rteClear()" title="清除格式">清除格式</button>
+      </div>
+      <div id="rte_editor" contenteditable="true" class="rte-editor" data-placeholder="在此输入正文，支持图文混排、音频视频"></div>
+      <textarea id="f_content" style="display:none"></textarea>
+      <input type="file" id="f_media" style="display:none">
+    </div>
     <div class="row2">
       <div><label>状态</label><select id="f_status">
         <option value="1" ${pre.status ? "selected" : ""}>已发布</option>
