@@ -519,7 +519,7 @@ class Handler(BaseHTTPRequestHandler):
         now = time.time()
         if not force and now - self._article_index["ts"] < 60:
             return
-        art_dir = os.path.join(MIRROR_ROOT, "www.shawn.com", "article")
+        art_dir = os.path.join(MIRROR_ROOT, "article")
         arts = {}
         try:
             files = [f for f in os.listdir(art_dir) if f.startswith("a_") and f.endswith(".html")]
@@ -1596,9 +1596,9 @@ class Handler(BaseHTTPRequestHandler):
         """从离线镜像扫描文章 HTML 文件，提取标题与 #标签 导入文章表"""
         if user["role"] not in ("super_admin", "admin"):
             return self.send_json({"ok": False, "msg": "权限不足"}, 403)
-        article_dir = os.path.join(MIRROR_ROOT, "www.shawn.com", "article")
+        article_dir = os.path.join(MIRROR_ROOT, "article")
         if not os.path.isdir(article_dir):
-            return self.send_json({"ok": False, "msg": "未找到离线镜像文章目录：www.shawn.com\\article"})
+            return self.send_json({"ok": False, "msg": "未找到离线镜像文章目录：article"})
         files = [f for f in os.listdir(article_dir)
                  if f.startswith("a_") and f.endswith(".html")]
         conn = get_db()

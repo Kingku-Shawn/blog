@@ -298,7 +298,7 @@ function bodyHtml(c) {
     case "link_list": return `<div class="pv-links"><h3>${esc(p.title || "链接")}</h3>${(p.links || []).map(l => `<a class="lnk">${esc(l.text)}</a>`).join("")}</div>`;
     case "stats": return `<div class="pv-stats"><h3>${esc(p.title || "数据统计")}</h3><div class="st-grid">${(p.stats || []).map(s => `<div class="st"><b>${esc(s.value)}</b><span>${esc(s.label)}</span></div>`).join("")}</div></div>`;
     case "notice": return `<div class="pv-notice" ${p.bg ? `style="background:${esc(p.bg)}"` : ""}><span class="nb">公告</span>${esc(p.text || "")}</div>`;
-    case "quote": return `<div class="pv-quote"><p>${esc(p.text || "")}</p>${p.author ? `<footer>—— ${esc(p.author)}</footer>` : ""}</div>`;
+    case "quote": return `<div class="pv-quote"><p>${esc(p.text || "")}</p>${p.author ? `` : ""}</div>`;
     case "button": return `<div class="pv-btn ${esc(p.theme || "primary")}">${esc(p.text || "按钮")}</div>`;
     case "code": return `<div class="pv-code"><pre><code>${esc(p.content || "")}</code></pre></div>`;
     case "custom_html": return `<div class="pv-html">${p.content || ""}</div>`;

@@ -89,12 +89,12 @@ function Invoke-Forward($rawPath, $queryPart, $req, $res) {
   }
 }
 
-Write-Host "离线站点已启动: http://$ListenHost`:$PORT/www.shawn.com/index.html"
+Write-Host "离线站点已启动: http://$ListenHost`:$PORT/"
 Write-Host "按 Ctrl+C 停止服务" -ForegroundColor Yellow
 
 # 打开默认浏览器
 try {
-  Start-Process "http://$ListenHost`:$PORT/www.shawn.com/index.html"
+  Start-Process "http://$ListenHost`:$PORT/"
 } catch {}
 
 while ($true) {
@@ -130,11 +130,11 @@ while ($true) {
     }
 
     if ($rawPath -eq '/' -or $rawPath -eq '') {
-      $rawPath = '/www.shawn.com/index.html'
-    } elseif ($rawPath -notmatch '^/(www\.shawn\.com|o\.shawn\.com|cdn\.jsdelivr\.net)/') {
-      # Vue 客户端渲染会把导航链接重写为根绝对路径（如 /article/x.html），
-      # 将其映射到主站目录 www.shawn.com 下
-      $rawPath = '/www.shawn.com' + $rawPath
+      $rawPath = '/index.html'
+    } elseif ($rawPath -like '/www.shawn.com/*') {
+      # 兼容旧 /www.shawn.com/ 前缀链接
+      $rawPath = $rawPath.Substring('/www.shawn.com'.Length)
+      if ($rawPath -eq '') { $rawPath = '/index.html' }
     }
 
     # 非法字符防护：坏引用 / 恶意 URL（含 URL 编码残留或非法字符）直接 404，避免服务器异常

@@ -30,12 +30,8 @@ jobs:
       - name: Assemble static site
         run: |
           mkdir -p _site
-          cp -r www.shawn.com _site/
-          cp -r o.shawn.com _site/ 2>/dev/null || true
-          cp -r cdn.jsdelivr.net _site/ 2>/dev/null || true
-          cp -r api _site/
-          cp index.html _site/
-          cp CNAME _site/ 2>/dev/null || true
+          cp -r aboutme article guitar-chords js kalimba metronome music o piano tiaoyin uploads user cdn.jsdelivr.net api _site/
+          cp index.html favicon.ico soulsoft-tools.css CNAME _site/ 2>/dev/null || true
           ls -la _site/
 
       - name: Upload artifact
