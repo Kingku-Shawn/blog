@@ -302,7 +302,7 @@ var state = {tag:"", col:"", page:1, size:6, sort:"latest", total:0};
 function esc(s){return (s==null?"":String(s)).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
 function fmtDate(s){if(!s)return "";return String(s).slice(0,10);}
 function loadToolsNav(){
-  fetch(API_BASE+"/tools").then(function(r){return r.json();}).then(function(j){
+  fetch(API_BASE+"/tools.json").then(function(r){return r.json();}).then(function(j){
     if(!j.ok)return;
     var on={};j.data.forEach(function(t){on[t.key]=1;});
     document.querySelectorAll("#navLinks a[data-tool]").forEach(function(a){
@@ -318,7 +318,7 @@ function renderUser(){
 }
 function logout(){localStorage.removeItem("xw_token");localStorage.removeItem("xw_username");renderUser();}
 function loadColumns(){
-  fetch(API_BASE+"/public/columns").then(function(r){return r.json();}).then(function(j){
+  fetch(API_BASE+"/public/columns.json").then(function(r){return r.json();}).then(function(j){
     if(!j.ok)return;
     var html='<span class="col-item on" data-col="">全部<span class="cnt">'+j.data.reduce(function(a,c){return a+c.cnt;},0)+'</span></span>';
     j.data.forEach(function(c){
@@ -330,7 +330,7 @@ function loadColumns(){
   }).catch(function(){});
 }
 function loadTags(){
-  fetch(API_BASE+"/public/tags").then(function(r){return r.json();}).then(function(j){
+  fetch(API_BASE+"/public/tags.json").then(function(r){return r.json();}).then(function(j){
     if(!j.ok)return;
     if(!j.data.length){document.getElementById("tagCloud").innerHTML='<span class="tag">暂无标签</span>';return;}
     var html="";
@@ -362,14 +362,15 @@ document.querySelectorAll(".tab[data-sort]").forEach(function(t){
 function loadPosts(){
   var box=document.getElementById("postList");
   box.innerHTML='<div class="loading"><div class="spin"></div></div>';
-  var q=API_BASE+"/public/posts?page="+state.page+"&size="+state.size;
-  if(state.tag)q+="&tag="+encodeURIComponent(state.tag);
-  if(state.col)q+="&column="+encodeURIComponent(state.col);
+  var q=API_BASE+"/public/posts.json";
   fetch(q).then(function(r){return r.json();}).then(function(j){
     if(!j.ok){box.innerHTML='<div class="empty"><b>加载失败</b>接口暂不可用，请稍后再试</div>';return;}
-    state.total=j.data.total;
-    var list=j.data.list.slice();
-    if(state.sort==="hot")list.sort(function(a,b){return b.views-a.views;});
+    var all=j.data.list.slice();
+    if(state.tag)all=all.filter(function(p){return (p.tags||[]).indexOf(state.tag)>=0;});
+    if(state.col)all=all.filter(function(p){return (p.columns||[]).indexOf(state.col)>=0;});
+    if(state.sort==="hot")all.sort(function(a,b){return b.views-a.views;});
+    state.total=all.length;
+    var list=all.slice((state.page-1)*state.size, state.page*state.size);
     if(!list.length){box.innerHTML='<div class="empty"><b>没有匹配的文章</b>换个标签或分栏试试</div>';}
     else{
       var html="";
@@ -403,7 +404,7 @@ function renderPager(){
 }
 function loadTools(){
   var box=document.getElementById("toolsGrid");
-  fetch(API_BASE+"/tools").then(function(r){return r.json();}).then(function(j){
+  fetch(API_BASE+"/tools.json").then(function(r){return r.json();}).then(function(j){
     if(!j.ok||!j.data.length){box.innerHTML='<div class="empty"><b>暂无工具</b></div>';return;}
     var html="";
     j.data.forEach(function(t){

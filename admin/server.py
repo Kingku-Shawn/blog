@@ -366,6 +366,10 @@ class Handler(BaseHTTPRequestHandler):
     def do_POST(self):
         parsed = urllib.parse.urlparse(self.path)
         path = parsed.path.rstrip("/") or "/"
+        ctype = self.headers.get("Content-Type", "") or ""
+        # 文件上传（multipart/form-data，需登录）
+        if path == "/api/upload" and "multipart/form-data" in ctype:
+            return self.api_upload()
         data = self.read_json()
         if data.get("_too_large"):
             return self.send_json({"ok": False, "msg": "请求体过大"}, 413)
@@ -1120,19 +1124,88 @@ class Handler(BaseHTTPRequestHandler):
         return self.send_json({"ok": True, "msg": "已保存，并在顶部追加时间戳：" + ts})
 
     # ---- 文章标签/分栏关联 ----
+    _TAG_PALETTE = ["#2563eb", "#06b6d4", "#f59e0b", "#ef4444", "#8b5cf6", "#10b981", "#ec4899", "#f97316", "#14b8a6", "#6366f1"]
+
     def _set_post_links(self, conn, pid, tags, columns):
         conn.execute("DELETE FROM post_tags WHERE post_id=?", (pid,))
         conn.execute("DELETE FROM post_columns WHERE post_id=?", (pid,))
-        for tid in tags or []:
+        for tag in tags or []:
+            tid = None
             try:
-                conn.execute("INSERT OR IGNORE INTO post_tags (post_id, tag_id) VALUES (?,?)", (pid, int(tid)))
+                tid = int(tag)
             except (TypeError, ValueError):
-                pass
+                name = str(tag).strip().lstrip("#")
+                if not name:
+                    continue
+                row = conn.execute("SELECT id FROM tags WHERE name=?", (name,)).fetchone()
+                if row:
+                    tid = row[0]
+                else:
+                    n = conn.execute("SELECT COUNT(*) FROM tags").fetchone()[0]
+                    color = self._TAG_PALETTE[n % len(self._TAG_PALETTE)]
+                    cur = conn.execute("INSERT INTO tags (name, color) VALUES (?,?)", (name, color))
+                    tid = cur.lastrowid
+            if tid:
+                conn.execute("INSERT OR IGNORE INTO post_tags (post_id, tag_id) VALUES (?,?)", (pid, tid))
         for cid in columns or []:
             try:
                 conn.execute("INSERT OR IGNORE INTO post_columns (post_id, column_id) VALUES (?,?)", (pid, int(cid)))
             except (TypeError, ValueError):
                 pass
+
+    def api_upload(self):
+        """本地文件上传：图片/音频/视频，保存到 o.shawn.com/uploads/，返回可访问 URL"""
+        user, err, code = self.require_perm("dashboard")
+        if err:
+            return self.send_json({"ok": False, "msg": err}, code)
+        import re
+        import time as _t
+        import uuid
+        ctype = self.headers.get("Content-Type", "") or ""
+        m = re.search(r"boundary=(.+)", ctype)
+        if not m:
+            return self.send_json({"ok": False, "msg": "缺少 boundary"}, 400)
+        boundary = m.group(1).strip().strip('"')
+        try:
+            length = int(self.headers.get("Content-Length", 0) or 0)
+        except ValueError:
+            length = 0
+        if length <= 0 or length > 110 * 1024 * 1024:
+            return self.send_json({"ok": False, "msg": "请求体大小无效"}, 413)
+        body = self.rfile.read(length)
+        filename, filedata = None, None
+        for part in body.split(("--" + boundary).encode()):
+            if not part or part.strip() in (b"--", b""):
+                continue
+            header_end = part.find(b"\r\n\r\n")
+            if header_end < 0:
+                continue
+            head = part[:header_end].decode("latin-1", "ignore")
+            fd = part[header_end + 4:]
+            if fd.endswith(b"\r\n"):
+                fd = fd[:-2]
+            nm = re.search(r'name="([^"]+)"', head)
+            if not nm or nm.group(1) != "file":
+                continue
+            fm = re.search(r'filename="([^"]*)"', head)
+            filename = fm.group(1) if fm else "upload.bin"
+            filedata = fd
+        if not filedata or not filename:
+            return self.send_json({"ok": False, "msg": "未收到文件"}, 400)
+        ext = os.path.splitext(filename)[1].lower()
+        allowed = {".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg",
+                   ".mp3", ".wav", ".ogg", ".m4a", ".aac", ".mid", ".midi",
+                   ".mp4", ".webm", ".mov"}
+        if ext not in allowed:
+            return self.send_json({"ok": False, "msg": "不支持的文件类型，仅允许图片/音频/视频"}, 400)
+        if len(filedata) > 100 * 1024 * 1024:
+            return self.send_json({"ok": False, "msg": "文件超过 100MB 限制"}, 413)
+        upload_dir = os.path.join(MIRROR_ROOT, "o.shawn.com", "uploads")
+        os.makedirs(upload_dir, exist_ok=True)
+        name = _t.strftime("%Y%m%d") + "-" + uuid.uuid4().hex[:8] + ext
+        with open(os.path.join(upload_dir, name), "wb") as f:
+            f.write(filedata)
+        return self.send_json({"ok": True, "data": {"url": "/o.shawn.com/uploads/" + name, "name": name}})
 
     def _post_extra(self, conn, pid):
         return {

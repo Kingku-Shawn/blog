@@ -110,6 +110,19 @@ while ($true) {
     $rawPath = [Uri]::UnescapeDataString($rawUrl)
     $origPath = $rawPath   # 保留原始路径，供 API 转发判断使用
 
+    # /api/*.json 优先服务本地静态数据（GitHub Pages 静态化产物）
+    if ($rawPath -like '/api/*.json') {
+      $apiFile = Join-Path $ROOT ($rawPath.TrimStart('/') -replace '/', '\')
+      if (Test-Path -LiteralPath $apiFile) {
+        $bytes = [System.IO.File]::ReadAllBytes($apiFile)
+        $res.StatusCode = 200
+        $res.ContentType = 'application/json; charset=utf-8'
+        $res.ContentLength64 = $bytes.Length
+        $res.OutputStream.Write($bytes, 0, $bytes.Length)
+        $res.Close()
+        continue
+      }
+    }
     # /api/* 与 /api-v1/* 请求转发到管理后台服务（127.0.0.1:8124），支持注册、登录、工具页桩接口与查询参数
     if ($rawPath -like '/api/*' -or $rawPath -like '/api-v1/*') {
       Invoke-Forward $rawPath $queryPart $req $res

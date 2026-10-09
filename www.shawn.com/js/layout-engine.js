@@ -97,7 +97,7 @@
         '<div class="card"><h3>分栏</h3><div class="col-list" data-lr="cols"><span class="loading">加载中</span></div></div>' +
         '<div class="card"><h3>标签</h3><div class="tag-cloud" data-lr="tags"><span class="loading">加载中</span></div></div>' +
         '';
-      fetch(API() + "/public/columns").then(function (r) { return r.json(); }).then(function (j) {
+      fetch(API() + "/public/columns.json").then(function (r) { return r.json(); }).then(function (j) {
         if (!j.ok) return;
         var cnt = j.data.reduce(function (a, c) { return a + c.cnt; }, 0);
         var html = '<span class="col-item on" data-col="">全部<span class="cnt">' + cnt + '</span></span>';
@@ -107,7 +107,7 @@
         /* URL 带入的分栏选中态同步 */
         cols.querySelectorAll(".col-item").forEach(function (i) { i.classList.toggle("on", i.getAttribute("data-col") === lState.col); });
       var tags = box.querySelector('[data-lr="tags"]');
-      if (tags) fetch(API() + "/public/tags").then(function (r) { return r.json(); }).then(function (j) {
+      if (tags) fetch(API() + "/public/tags.json").then(function (r) { return r.json(); }).then(function (j) {
         if (!j.ok || !j.data.length) { tags.innerHTML = '<span class="tag">暂无标签</span>'; return; }
         var th = "";
         j.data.forEach(function (t) { th += '<span class="tag" data-tag="' + lEsc(t.name) + '"><span class="dot" style="background:' + lEsc(t.color) + '"></span>' + lEsc(t.name) + '</span>'; });
@@ -139,7 +139,7 @@
     }
     if (c.type === "tools_grid") {
       var box = el.querySelector('[data-lr="tools"]');
-      fetch(API() + "/tools").then(function (r) { return r.json(); }).then(function (j) {
+      fetch(API() + "/tools.json").then(function (r) { return r.json(); }).then(function (j) {
         if (!j.ok || !j.data.length) { box.innerHTML = '<div class="empty"><b>暂无工具</b></div>'; return; }
         var html = "";
         j.data.forEach(function (t) {
@@ -150,7 +150,7 @@
     }
     if (c.type === "about_content") {
       var box = el.querySelector('[data-lr="about"]');
-      fetch(API() + "/about").then(function (r) { return r.json(); }).then(function (j) {
+      fetch(API() + "/about.json").then(function (r) { return r.json(); }).then(function (j) {
         if (!j.ok || !j.data) { box.innerHTML = '<div class="about-card">内容加载失败</div>'; return; }
         var d = j.data;
         box.innerHTML = '<div class="about-card"><span class="about-stamp">最后更新：' + lEsc(d.created_at || "") + '</span>' +
@@ -178,12 +178,15 @@
     if (!lState.box) return;
     var box = lState.box;
     box.innerHTML = '<div class="loading"><div class="spin"></div></div>';
-    var q = API() + "/public/posts?page=" + lState.page + "&size=" + lState.size;
-    if (lState.tag) q += "&tag=" + encodeURIComponent(lState.tag);
-    if (lState.col) q += "&column=" + encodeURIComponent(lState.col);
+    var q = API() + "/public/posts.json";
     fetch(q).then(function (r) { return r.json(); }).then(function (j) {
       if (!j.ok) { box.innerHTML = '<div class="empty"><b>加载失败</b>接口暂不可用</div>'; return; }
-      lState.total = j.data.total;
+      var all = j.data.list.slice();
+      if (lState.tag) all = all.filter(function (p) { return (p.tags || []).indexOf(lState.tag) >= 0; });
+      if (lState.col) all = all.filter(function (p) { return (p.columns || []).indexOf(lState.col) >= 0; });
+      lState.total = all.length;
+      var list = all.slice((lState.page - 1) * lState.size, lState.page * lState.size);
+      j.data.list = list;
       var list = j.data.list.slice();
       if (lState.sort === "hot") list.sort(function (a, b) { return b.views - a.views; });
       if (!list.length) { box.innerHTML = '<div class="empty"><b>没有匹配的文章</b>换个标签或分栏试试</div>'; }
@@ -222,7 +225,7 @@
   }
 
   function renderLayout() {
-    fetch(API() + "/layout").then(function (r) { return r.json(); }).then(function (j) {
+    fetch(API() + "/layout.json").then(function (r) { return r.json(); }).then(function (j) {
       if (!j.ok || !j.data || !j.data.custom) return;   // 默认布局保持原生渲染
       var pages = j.data.pages || {};
       var layout = pages[lPageKey];

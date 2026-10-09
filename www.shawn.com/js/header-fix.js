@@ -194,7 +194,7 @@
   /* 工具开关同步：后台关闭的工具在导航隐藏（与主页一致） */
   function syncToolsNav() {
     try {
-      fetch("/api/tools").then(function (r) { return r.json(); }).then(function (j) {
+      fetch("/api/tools.json").then(function (r) { return r.json(); }).then(function (j) {
         if (!j || !j.ok || !j.data) return;
         var enabled = {};
         j.data.forEach(function (t) { if (t.enabled) enabled[t.key] = 1; });

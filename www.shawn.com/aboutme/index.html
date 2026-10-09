@@ -186,7 +186,7 @@ footer{margin-top:56px;padding:28px 24px;text-align:center;color:var(--ink3);fon
 var API_BASE = "/api";
 function esc(s){return (s==null?"":String(s)).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
 function loadToolsNav(){
-  fetch(API_BASE+"/tools").then(function(r){return r.json();}).then(function(j){
+  fetch(API_BASE+"/tools.json").then(function(r){return r.json();}).then(function(j){
     if(!j.ok)return;
     var on={};j.data.forEach(function(t){on[t.key]=1;});
     document.querySelectorAll("#navLinks a[data-tool]").forEach(function(a){
@@ -203,7 +203,7 @@ function renderUser(){
 function logout(){localStorage.removeItem("xw_token");localStorage.removeItem("xw_username");renderUser();}
 function loadAbout(){
   var box=document.getElementById("aboutBox");
-  fetch(API_BASE+"/about").then(function(r){return r.json();}).then(function(j){
+  fetch(API_BASE+"/about.json").then(function(r){return r.json();}).then(function(j){
     if(!j.ok){box.innerHTML='<div class="about-card">内容加载失败</div>';return;}
     var d=j.data;
     box.innerHTML='<div class="about-card"><span class="about-stamp">最后更新：'+esc(d.created_at||"")+'</span>'+
