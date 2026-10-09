@@ -1063,8 +1063,8 @@ class Handler(BaseHTTPRequestHandler):
 
     _SAFE_HTML_TAGS = {"p", "h1", "h2", "h3", "h4", "strong", "b", "em", "i", "u",
                        "ul", "ol", "li", "blockquote", "code", "pre", "br", "hr",
-                       "a", "img", "span", "div", "table", "thead", "tbody", "tr", "th", "td"}
-    _SAFE_ATTRS = {"href", "src", "alt", "title", "target", "style", "width", "height"}
+                       "a", "img", "audio", "video", "span", "div", "table", "thead", "tbody", "tr", "th", "td"}
+    _SAFE_ATTRS = {"href", "src", "alt", "title", "target", "style", "width", "height", "controls", "autoplay", "loop", "muted"}
 
     def _sanitize_html(self, html):
         """白名单过滤富文本，防 XSS：只保留安全标签与属性，去掉 script/iframe/on*"""
@@ -1088,7 +1088,7 @@ class Handler(BaseHTTPRequestHandler):
             if name not in self._SAFE_HTML_TAGS:
                 return ""
             out = "<" + name
-            for am in re.finditer(r'([a-zA-Z\-]+)\s*=\s*"([^"]*)"', attrs):
+            for am in re.finditer(r'([a-zA-Z\-]+)\s*=\s*["\']([^"\']*)["\']', attrs):
                 an, av = am.group(1).lower(), am.group(2)
                 if an in self._SAFE_ATTRS and not re.match(r"^https?://", av) or an in ("href", "src") and re.match(r"^(https?:)?//", av):
                     if an in ("href", "src") and re.match(r"^(#|https?:|//|\.|/)", av):
@@ -1097,6 +1097,10 @@ class Handler(BaseHTTPRequestHandler):
                     elif an not in ("href", "src"):
                         av = av.replace('"', "")
                         out += ' ' + an + '="' + av + '"'
+            # 布尔属性（无值）保留
+            for b in ("controls", "autoplay", "loop", "muted"):
+                if re.search(r"\b" + b + r"\b", attrs, re.I) and b not in out:
+                    out += " " + b
             return out + ">"
         html = re.sub(r"<[^>]*>", fix, html)
         return html

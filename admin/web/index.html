@@ -411,14 +411,73 @@ async function editPost(id) {
       <button class="btn btn-green" onclick="savePost(${id || 0})">保存</button>
     </div>`);
   $("f_cat").value = String(pre.category_id || "");
+  window.newTagNames = [];
+  initRte(pre.content || "");
+}
+
+/* ---------- 富文本编辑器（图文编辑） ---------- */
+function initRte(html){
+  const ed = $("rte_editor");
+  if (ed) {
+    ed.innerHTML = html;
+    const bar = $("rte_bar");
+    bar.querySelectorAll("[data-cmd]").forEach(b => {
+      b.onclick = () => { document.execCommand(b.getAttribute("data-cmd"), false, b.getAttribute("data-val")); ed.focus(); };
+    });
+    const fi = $("f_media");
+    window._rteMediaType = "image";
+    fi.onchange = () => {
+      const f = fi.files[0]; if (!f) return;
+      const fd = new FormData(); fd.append("file", f);
+      fetch("/api/upload", { method: "POST", headers: { "X-Token": TOKEN }, body: fd })
+        .then(r => r.json()).then(j => {
+          if (!j.ok) { toast("上传失败: " + j.msg, false); return; }
+          const u = j.data.url, t = window._rteMediaType;
+          let html = "";
+          if (t === "image") html = `<img src="${u}" alt="" style="max-width:100%">`;
+          else if (t === "audio") html = `<audio src="${u}" controls></audio>`;
+          else html = `<video src="${u}" controls style="max-width:100%"></video>`;
+          document.execCommand("insertHTML", false, html);
+          ed.focus(); toast("已插入");
+        }).catch(() => toast("上传失败，请确认后台服务已启动", false));
+    };
+  }
+}
+function rteLink(){
+  const u = prompt("输入链接地址（以 http 开头）");
+  if (u) document.execCommand("createLink", false, u);
+  $("rte_editor").focus();
+}
+function rteMedia(type){
+  window._rteMediaType = type;
+  const fi = $("f_media");
+  fi.setAttribute("accept", type === "image" ? "image/*" : type === "audio" ? "audio/*" : "video/*");
+  fi.value = ""; fi.click();
+}
+function rteClear(){ document.execCommand("removeFormat", false, null); $("rte_editor").focus(); }
+function addCustomTag(){
+  const inp = $("f_tagInput"); const v = (inp.value || "").trim().replace(/^#+/, "");
+  if (!v) return;
+  const cb = Array.from(document.querySelectorAll(".ptag")).find(x => x.getAttribute("data-name") === v);
+  if (cb) { cb.checked = true; inp.value = ""; return; }
+  const list = window.newTagNames || (window.newTagNames = []);
+  if (list.includes(v)) { inp.value = ""; return; }
+  list.push(v);
+  $("f_newTags").innerHTML = list.map((n,i) => `<span class="tag-chip-new">#${esc(n)}<span class="x" data-i="${i}" onclick="delNewTag(${i})">×</span></span>`).join("");
+  inp.value = "";
+}
+function delNewTag(i){
+  window.newTagNames.splice(i, 1);
+  $("f_newTags").innerHTML = window.newTagNames.map((n,j) => `<span class="tag-chip-new">#${esc(n)}<span class="x" data-i="${j}" onclick="delNewTag(${j})">×</span></span>`).join("");
 }
 
 async function savePost(id) {
   const tags = Array.from(document.querySelectorAll(".ptag:checked")).map(x => Number(x.value));
+  (window.newTagNames || []).forEach(n => tags.push(n));
   const columns = Array.from(document.querySelectorAll(".pcol:checked")).map(x => Number(x.value));
   const body = {
     id, title: $("f_title").value.trim(), category_id: $("f_cat").value || null,
-    summary: $("f_summary").value, content: $("f_content").value,
+    summary: $("f_summary").value, content: $("rte_editor").innerHTML,
     status: Number($("f_status").value), is_top: Number($("f_top").value),
     tags, columns,
   };
@@ -771,7 +830,7 @@ async function loadAboutPage() {
         <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
           <button class="btn btn-sm" onclick="aboutInsert('<h2></h2>')">标题</button>
           <button class="btn btn-sm" onclick="aboutInsert('<p></p>')">段落</button>
-          <button class="btn btn-sm" onclick="aboutInsert('<img src=\\'\\' style=\\'max-width:100%\\'>')">图片</button>
+          <button class="btn btn-sm" onclick="aboutMedia()">图片（本地上传）</button>
           <button class="btn btn-sm" onclick="aboutInsert('<a href=\\'\\'>链接</a>')">链接</button>
           <button class="btn btn-sm" onclick="aboutInsert('<ul>\\n<li></li>\\n</ul>')">列表</button>
           <button class="btn btn-sm" onclick="aboutInsert('<strong></strong>')">加粗</button>
@@ -790,6 +849,26 @@ function aboutInsert(tag) {
   const start = ta.selectionStart || ta.value.length;
   ta.value = ta.value.slice(0, start) + tag + ta.value.slice(ta.selectionEnd || ta.value.length);
   ta.focus();
+}
+function aboutMedia() {
+  let fi = $("about_media");
+  if (!fi) {
+    fi = document.createElement("input");
+    fi.type = "file"; fi.accept = "image/*"; fi.id = "about_media"; fi.style.display = "none";
+    document.body.appendChild(fi);
+  }
+  fi.value = "";
+  fi.onchange = () => {
+    const f = fi.files[0]; if (!f) return;
+    const fd = new FormData(); fd.append("file", f);
+    fetch("/api/upload", { method: "POST", headers: { "X-Token": TOKEN }, body: fd })
+      .then(r => r.json()).then(j => {
+        if (!j.ok) { toast("上传失败: " + j.msg, false); return; }
+        aboutInsert(`<img src="${j.data.url}" alt="" style="max-width:100%">`);
+        toast("已插入图片");
+      }).catch(() => toast("上传失败，请确认后台服务已启动", false));
+  };
+  fi.click();
 }
 async function saveAbout() {
   const content = $("about_content").value;
