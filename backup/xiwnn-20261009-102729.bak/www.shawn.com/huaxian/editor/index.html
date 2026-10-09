@@ -1,0 +1,58 @@
+﻿<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="author" content="shawn" />
+    <meta name="copyright" content="shawn.com" />
+    <title>物理画线 - 关卡场景编辑器</title><meta name="keywords" content="画物理线条编辑器,物理画线编辑器,场景编辑器，关卡场景设计工具"><meta name="description" content="在这个网页中你将是一名造物主，快来出题难倒那些所谓的最聪明最强的物理学家吧">
+    <link rel="modulepreload" crossorigin href="../../../o.shawn.com/cdn-2607/a/0/-page-legacy-BJMWrvtD.js"><link rel="modulepreload" crossorigin href="../../../o.shawn.com/cdn-2607/a/0/-page-Cj94HbVz.js"><link rel="stylesheet" href="../../../o.shawn.com/cdn-2607/a/0/-page-CzEYkn6d.css"><link rel="modulepreload" crossorigin href="../../../o.shawn.com/cdn-2607/a/0/manager-legacy-TThtIUZI.js"><link rel="modulepreload" crossorigin href="../../../o.shawn.com/cdn-2607/a/0/manager-BSnv9CM2.js"><link rel="stylesheet" href="../../../o.shawn.com/cdn-2607/a/0/manager-DfIrwKl1.css"><link rel="modulepreload" crossorigin href="../../../o.shawn.com/cdn-2607/a/0/index-legacy-BpQc-u0o.js"><link rel="modulepreload" crossorigin href="../../../o.shawn.com/cdn-2607/a/0/index-Cadi4-tq.js"><link rel="stylesheet" href="../../../o.shawn.com/cdn-2607/a/0/index-2jKBlGJ6.css"><link rel="modulepreload" crossorigin href="../../../o.shawn.com/cdn-2607/a/0/xw-footer-legacy-Cl6Jcxk5.js"><link rel="modulepreload" crossorigin href="../../../o.shawn.com/cdn-2607/a/0/xw-footer-BYEp7rSw.js"><link rel="stylesheet" href="../../../o.shawn.com/cdn-2607/a/0/xw-footer-BoP9TnCk.css"><link rel="modulepreload" crossorigin href="../../../o.shawn.com/cdn-2607/a/0/inline-panel-legacy-Ds4aFJ99.js"><link rel="modulepreload" crossorigin href="../../../o.shawn.com/cdn-2607/a/0/inline-panel-O43zqOBs.js"><link rel="stylesheet" href="../../../o.shawn.com/cdn-2607/a/0/inline-panel-CnFof7zP.css"><link rel="modulepreload" crossorigin href="../../../o.shawn.com/cdn-2607/a/0/use-pinlun-list-legacy-BCSeIeIH.js"><link rel="modulepreload" crossorigin href="../../../o.shawn.com/cdn-2607/a/0/use-pinlun-list-CeZnsGle.js"><link rel="stylesheet" href="../../../o.shawn.com/cdn-2607/a/0/use-pinlun-list-CpRPk2xq.css">
+    <script type="module" crossorigin src="../../../o.shawn.com/cdn-2607/a/0/index-D-3VvwBs.js"></script>
+    <link rel="stylesheet" crossorigin href="../../../o.shawn.com/cdn-2607/a/0/index-RvnZBxNx.css">
+<link rel="stylesheet" href="/soulsoft-tools.css">
+    <script type="module">import.meta.url;import("_").catch(()=>1);(async function* g(){})();window.__vite_is_modern_browser=true</script>
+    <script type="module">!function(){if(window.__vite_is_modern_browser)return;console.warn("vite: loading legacy chunks, syntax error above and the same error below should be ignored");var e=document.getElementById("vite-legacy-polyfill"),n=document.createElement("script");n.src=e.src,n.onload=function(){System.import(document.getElementById('vite-legacy-entry').getAttribute('data-src'))},document.body.appendChild(n)}();</script>
+  </head>
+  <body>
+    <div id="main"><!--[--><!--[--><div id="app"><div class="listview main-container"><div class="manager-container"><div class="left-wrapper"><div class="flex-wrapper"><div class="canvas-wrapper"><canvas></canvas></div></div></div><div class="right-wrapper"><div class="right-panel"><div class="panel"><div class="title"><span> # 重力线条关卡编辑器 - 提示</span></div><!----><div class="panel-content"><!--[--><div class="right-panel-tips"><ul class="tip-items"><li>场景中至少需要包含一个球和一个球筐。</li><li>一个球筐最多能装下两个球，注意球和球筐的搭配。</li><li>红色的球进入红色的筐才算成功。不同颜色的球需要配合相应颜色的筐。</li><li>场景中的矩形面积不能太大，因为面积大的矩形会因为太重而把它下方的物体压扁了。</li><li>请留意物体上那些红色感叹号，存在感叹号意味着没办法保存。</li></ul></div><!--]--></div></div><div class="panel"><div class="title"><span> # 操作</span></div><!----><div class="panel-content"><!--[--><div class="user-actions"><button type="button" class="xw-button primary"><i class="icon-play iconfont"></i><!--[--> 试玩 <!--]--></button><button type="button" class="xw-button"><i class="icon-close iconfont"></i><!--[--> 退出编辑 <!--]--></button><button type="button" class="xw-button success"><i class="icon-ok iconfont"></i><!--[--> 提交保存 <!--]--></button></div><!--]--></div></div><div class="panel"><div class="title"><span> # 添加新的物体到场景中</span></div><div class="help-text">鼠标按住这些物体然后拖动到左侧的场景中再松开</div><div class="panel-content"><!--[--><div class="add-wuti-list"><!--[--><div title="鼠标可拖动我到左边的场景中"><div class="wuti-item rectangle"><span class="title"> 矩形 </span></div></div><div title="鼠标可拖动我到左边的场景中"><div class="wuti-item triangle"><span class="title">三角形</span></div></div><div title="鼠标可拖动我到左边的场景中"><div class="wuti-item equilateral-triangle"><span class="title">等边三角形</span></div></div><div title="鼠标可拖动我到左边的场景中"><div class="wuti-item ball"><span class="title">球</span></div></div><div title="鼠标可拖动我到左边的场景中"><div class="wuti-item basket"><span class="title">球筐</span></div></div><!--]--></div><!--]--></div></div><div class="panel"><div class="title"><span> # 场景中已经存在的物体</span></div><!----><div class="panel-content"><!--[--><div class="exist-wuti-list"><div class="global-errs"><!--[--><p class="error-msg"><i class="iconfont icon-danger"></i><span>场景中至少需要一个球</span></p><!--]--></div><!--[--><!--]--></div><!--]--></div></div><div class="panel"><div class="title"><span> # 重力线条关卡编辑器 - 提示</span></div><!----><div class="panel-content"><!--[--><div class="right-panel-tips"><ul class="tip-items"><li>场景中至少需要包含一个球和一个球筐。</li><li>一个球筐最多能装下两个球，注意球和球筐的搭配。</li><li>红色的球进入红色的筐才算成功。不同颜色的球需要配合相应颜色的筐。</li><li>场景中的矩形面积不能太大，因为面积大的矩形会因为太重而把它下方的物体压扁了。</li><li>请留意物体上那些红色感叹号，存在感叹号意味着没办法保存。</li></ul></div><!--]--></div></div></div></div><div class="global-canvas"><canvas></canvas></div><div class="try-panel" style="display:none;"><div class="try-container"><div class="left"><canvas></canvas></div><div class="right"><div class="p-btns"><button type="button" class="xw-button error"><i class="icon-close iconfont"></i><!--[--> 结束试玩 <!--]--></button></div><div class="p-btns"><button type="button" class="xw-button primary"><i class="icon-reload iconfont"></i><!--[--> 重新加载 <!--]--></button></div></div></div></div></div></div><div class="huaxian-editor"><div class="left-wrap"><div class="header-nav"><span>导航:</span><a href="../../index.html"> shawn的博客 </a><a href="../index.html"> 画物理线条Web版 - Draw Physics Lines </a><p>关卡编辑器因网页较为复杂，建议在PC环境下使用</p></div><div class="block-title"> # 您创造的关卡 </div><div class="guanqia-list"><div class="level-create"><div class="level-avatar"><div class="level-create-icon"></div></div><div class="level-title"> 创建一个新的关卡 </div></div><p class="null-tips"> 您还没有创建过关卡哦~ 点击上面的按钮创建一个新的关卡吧。 </p></div></div><div class="pinlun-wrap"><div class="block-title"> # 吐槽一下 </div><div class="xw-pinlun2" data-v-92f3e67c><div class="pl2-inline pl2-input-top" data-v-92f3e67c data-v-ce700fd0><div class="pl2-inline-head" data-v-ce700fd0><span class="pl2-inline-title" data-v-ce700fd0>评论</span><!----></div><!----><div class="pl2-inline-list" data-v-ce700fd0><div class="pl2-spin" data-v-ce700fd0></div><!----><!--[--><!--]--><!----></div><!----><div class="pl2-input" data-v-ce700fd0 data-v-4d4a99fa><!----><div class="pl2-ipt-row" data-v-4d4a99fa><textarea placeholder="发表一下看法" maxlength="600" rows="1" class="" data-v-4d4a99fa></textarea><button type="button" class="pl2-send" title="发送" data-v-4d4a99fa><svg class="pl2-icon" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-v-4d4a99fa data-v-101ca45d><!--[--><path d="M22 2L11 13" data-v-101ca45d></path><path d="M22 2l-7 20-4-9-9-4z" data-v-101ca45d></path><!--]--></svg></button></div><!----><div class="pl2-user-row" data-v-4d4a99fa><div class="mini-user-block" data-v-4d4a99fa><div class="no-login"><!--[--><button type="button" data-v-4d4a99fa> 登录 </button><span data-v-4d4a99fa> 或 匿名发表评论</span><!--]--></div></div></div></div></div></div></div><footer class="xw-footer" data-v-157384db><div class="container text-center" data-v-157384db><p data-v-157384db><span data-v-157384db>© WWW.SHAWN.COM</span><span data-v-157384db><span data-v-157384db>粤ICP备</span><a href="https://beian.miit.gov.cn/" target="_blank" data-v-157384db>16015361</a><span data-v-157384db>号-1</span></span></p></div></footer></div><!----><!----></div><!--]--><div><!----></div><!--]--></div>
+    <script>window.__INITIAL_STATE__=null;
+        window.__PINIA_STATE__=undefined;
+        window._SSR_PAGE_="/huaxian/editor/"</script>
+    <script nomodule>!function(){var e=document,t=e.createElement("script");if(!("noModule"in t)&&"onbeforeload"in t){var n=!1;e.addEventListener("beforeload",(function(e){if(e.target===t)n=!0;else if(!e.target.hasAttribute("nomodule")||!n)return;e.preventDefault()}),!0),t.type="module",t.src=".",e.head.appendChild(t),t.remove()}}();</script>
+    <script nomodule crossorigin id="vite-legacy-polyfill" src="../../../o.shawn.com/cdn-2607/a/0/polyfills-legacy-DT5YKNL2.js"></script>
+    <script nomodule crossorigin id="vite-legacy-entry" data-src="../../../o.shawn.com/cdn-2607/a/0/index-legacy-Buv7pcdw.js">System.import(document.getElementById('vite-legacy-entry').getAttribute('data-src'))</script>
+  ﻿<script>
+/* 清逸的博客 · 工具页品牌统一 */
+(function () {
+  function setBrand() {
+    var a = document.querySelector('.header-logo a');
+    if (a && a.textContent.trim() !== '清逸的博客') { a.textContent = '清逸的博客'; }
+    var fs = document.querySelectorAll('footer.xw-footer span');
+    fs.forEach(function (s) {
+      if (s.textContent.indexOf('WWW.SHAWN.COM') >= 0) { s.textContent = '© 清逸的博客'; }
+    });
+    /* 正文品牌残留统一替换 */
+    document.querySelectorAll('a,span,div,p,li,h1,h2,h3,strong,em,b').forEach(function (e) {
+      if (e.children.length > 0) return;
+      var t = e.textContent;
+      if (!t) return;
+      var nt = t.replace(/shawn的博客/g, '清逸的博客');
+      nt = nt.replace(/^shawn\.com\s*-\s*/, '清逸的博客 - ');
+      if (nt !== t) { e.textContent = nt; }
+    });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () { setBrand(); });
+  } else { setBrand(); }
+  var t = setInterval(function () {
+    var a = document.querySelector('.header-logo a');
+    if (a && a.textContent.trim() === '清逸的博客') { clearInterval(t); }
+    setBrand();
+  }, 800);
+})();
+</script>
+
+</body>
+</html>

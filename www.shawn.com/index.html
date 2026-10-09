@@ -1,0 +1,483 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="qingyi">
+<meta name="copyright" content="shawn.com">
+<title>清逸的博客</title>
+<style>
+:root{
+  --primary:#2563eb; --accent:#0ea5e9; --ink:#0f172a; --ink2:#64748b; --ink3:#94a3b8;
+  --bg:#f5f7fb; --card:#ffffff; --line:rgba(15,23,42,.07);
+  --grad:linear-gradient(135deg,#2563eb,#0ea5e9);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.6;min-height:100vh}
+a{text-decoration:none;color:inherit}
+.ambient{position:fixed;top:-180px;left:-120px;width:520px;height:520px;border-radius:50%;background:radial-gradient(circle at center,rgba(37,99,235,.16),transparent 65%);z-index:0;pointer-events:none}
+.ambient.r{top:auto;bottom:-200px;right:-140px;left:auto;width:560px;height:560px;background:radial-gradient(circle at center,rgba(14,165,233,.14),transparent 65%)}
+
+/* 导航 */
+.nav{position:fixed;top:0;left:0;right:0;height:68px;z-index:50;background:rgba(255,255,255,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.nav-in{max-width:1200px;margin:0 auto;height:100%;display:flex;align-items:center;gap:28px;padding:0 24px}
+.logo{font-size:20px;font-weight:800;letter-spacing:.5px;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.nav-links{display:flex;gap:4px;flex:1;flex-wrap:wrap}
+.nav-links a{display:block;padding:8px 14px;border-radius:999px;font-size:14px;color:var(--ink2);transition:.2s}
+.nav-links a:hover{color:var(--primary);background:rgba(37,99,235,.08)}
+.nav-links a.on{color:#fff;background:var(--grad);font-weight:600}
+.nav-user{font-size:14px;color:var(--ink2);white-space:nowrap}
+.nav-user a{color:var(--primary);font-weight:600}
+.nav-user .btn-exit{color:var(--ink3);margin-left:10px;cursor:pointer;border:0;background:none;font-size:13px}
+@media(max-width:900px){.nav-links{display:none}}
+
+/* Hero */
+.hero{margin:96px auto 0;max-width:1200px;padding:0 24px;position:relative;z-index:1}
+.hero-card{position:relative;border-radius:32px;padding:64px 48px;color:#fff;overflow:hidden;background:linear-gradient(135deg,#1d4ed8 0%,#2563eb 40%,#0ea5e9 100%);box-shadow:0 24px 60px rgba(37,99,235,.32)}
+.hero-card::before{content:"";position:absolute;top:-80px;right:-60px;width:360px;height:360px;border-radius:50%;background:rgba(255,255,255,.14);filter:blur(6px)}
+.hero-card::after{content:"";position:absolute;bottom:-110px;left:34%;width:300px;height:300px;border-radius:50%;background:rgba(255,255,255,.09)}
+.hero-card h1{font-size:44px;font-weight:800;position:relative;z-index:1}
+.hero-card p{font-size:17px;opacity:.92;margin-top:12px;max-width:560px;position:relative;z-index:1}
+.hero-card .hero-badges{position:relative;z-index:1;margin-top:26px;display:flex;gap:12px;flex-wrap:wrap}
+.hero-card .hero-badges span{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.35);padding:6px 16px;border-radius:999px;font-size:13px;backdrop-filter:blur(4px)}
+@media(max-width:720px){.hero-card{padding:40px 26px}.hero-card h1{font-size:32px}}
+
+/* 布局 */
+.layout{max-width:1200px;margin:28px auto 0;padding:0 24px;display:grid;grid-template-columns:300px 1fr;gap:26px;position:relative;z-index:1}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}
+
+/* 卡片通用 */
+.card{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:24px;box-shadow:0 10px 30px rgba(15,23,42,.05)}
+.card h3{font-size:16px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.card h3::before{content:"";width:4px;height:16px;border-radius:2px;background:var(--grad)}
+.side{display:flex;flex-direction:column;gap:22px}
+.side .sticky{position:sticky;top:92px;display:flex;flex-direction:column;gap:22px}
+
+/* 侧栏个人信息 */
+.profile .p-name{font-size:18px;font-weight:800}
+.profile .p-desc{color:var(--ink2);font-size:13.5px;margin-top:8px;line-height:1.7}
+.profile .p-meta{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap}
+.profile .p-meta span{font-size:12px;color:var(--ink2);background:#f1f5f9;padding:4px 12px;border-radius:999px}
+
+/* 标签云 */
+.tag-cloud{display:flex;flex-wrap:wrap;gap:8px;background:transparent}
+.tag{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;font-size:13px;color:var(--ink2);background:#f1f5f9;border:1px solid transparent;cursor:pointer;transition:.18s;user-select:none}
+.tag .dot{width:8px;height:8px;border-radius:50%;flex:none}
+.tag:hover{color:var(--primary);border-color:rgba(37,99,235,.35);background:rgba(37,99,235,.06)}
+.tag.on{color:#fff;background:var(--grad);border-color:transparent}
+
+/* 标签云 */
+
+/* 分栏列表 */
+.col-list{display:flex;flex-direction:column;gap:4px}
+.col-item{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border-radius:12px;font-size:14px;color:var(--ink2);cursor:pointer;transition:.15s}
+.col-item:hover{background:#f1f5f9;color:var(--primary)}
+.col-item.on{background:rgba(37,99,235,.08);color:var(--primary);font-weight:600}
+.col-item .cnt{font-size:12px;color:var(--ink3)}
+
+/* 内容区 */
+.content{min-width:0}
+.sort-tabs{display:flex;gap:10px;margin-bottom:20px}
+.tab{padding:9px 20px;border-radius:999px;font-size:14px;color:var(--ink2);cursor:pointer;transition:.18s;background:#fff;border:1px solid var(--line)}
+.tab:hover{color:var(--primary)}
+.tab.on{color:#fff;background:var(--grad);border-color:transparent}
+.post-card{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:24px 26px;margin-bottom:18px;transition:.2s;cursor:pointer;display:block}
+.post-card:hover{transform:translateY(-2px);box-shadow:0 16px 40px rgba(15,23,42,.09);border-color:rgba(37,99,235,.25)}
+.post-card h2{font-size:20px;font-weight:700;line-height:1.45}
+.post-card .post-meta{display:flex;align-items:center;gap:16px;margin-top:10px;font-size:12.5px;color:var(--ink3);flex-wrap:wrap}
+.post-card .post-meta .chip{background:#f1f5f9;padding:3px 10px;border-radius:999px;color:var(--ink2)}
+.post-card .post-meta .col-chip{background:rgba(37,99,235,.08);color:var(--primary)}
+.post-card p{color:var(--ink2);font-size:14.5px;margin-top:12px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.empty{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:56px 24px;text-align:center;color:var(--ink3)}
+.empty b{display:block;font-size:16px;color:var(--ink2);margin-bottom:6px}
+.pager{display:flex;justify-content:center;gap:10px;margin-top:24px}
+.pager button{border:1px solid var(--line);background:#fff;color:var(--ink2);border-radius:12px;padding:8px 16px;font-size:14px;cursor:pointer;transition:.15s}
+.pager button:hover{color:var(--primary);border-color:rgba(37,99,235,.4)}
+.pager button:disabled{opacity:.4;cursor:not-allowed}
+.pager .pg-cur{background:var(--grad);color:#fff;border-color:transparent}
+
+/* 工具区 */
+.tools-sec{max-width:1200px;margin:34px auto 0;padding:0 24px;position:relative;z-index:1}
+.tools-sec h2{font-size:20px;font-weight:800;margin-bottom:18px}
+.tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:18px}
+.tool-card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:22px;transition:.2s;display:block;position:relative;overflow:hidden}
+.tool-card:hover{transform:translateY(-3px);box-shadow:0 14px 36px rgba(15,23,42,.09)}
+.tool-card::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;background:var(--grad)}
+.tool-card .t-name{font-size:16px;font-weight:700}
+.tool-card .t-desc{font-size:13px;color:var(--ink2);margin-top:6px;line-height:1.6}
+.tool-card .t-go{margin-top:14px;font-size:13px;color:var(--primary);font-weight:600}
+
+/* 页脚 */
+footer{margin-top:56px;padding:28px 24px;text-align:center;color:var(--ink3);font-size:13px;border-top:1px solid var(--line)}
+.loading{display:flex;justify-content:center;padding:48px 0;color:var(--ink3)}
+.spin{width:34px;height:34px;border-radius:50%;border:3px solid rgba(37,99,235,.15);border-top-color:var(--primary);animation:rot 1s linear infinite}
+@keyframes rot{to{transform:rotate(360deg)}}
+
+/* 移动端适配：汉堡侧边菜单 */
+  .mobile-hamburger, .mobile-drawer, .mobile-drawer-mask { display: none; }
+
+@media (max-width: 900px) {
+  .mobile-hamburger {
+    position: fixed; top: 15px; right: 14px; z-index: 1500;
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 38px; height: 38px; border: none; background: #f3f7fc;
+    border-radius: 12px; cursor: pointer; padding: 0;
+    box-shadow: 0 4px 14px rgba(15,23,42,.08);
+  }
+  .mobile-hamburger span { display: block; width: 18px; height: 2px; background: #0f172a; border-radius: 2px; position: relative; }
+  .mobile-hamburger span::before, .mobile-hamburger span::after {
+    content: ""; position: absolute; left: 0; width: 18px; height: 2px;
+    background: #0f172a; border-radius: 2px;
+  }
+  .mobile-hamburger span::before { top: -5px; }
+  .mobile-hamburger span::after { top: 5px; }
+  .mobile-hamburger.active span { background: transparent; }
+  .mobile-hamburger.active span::before { top: 0; transform: rotate(45deg); }
+  .mobile-hamburger.active span::after { top: 0; transform: rotate(-45deg); }
+  .mobile-drawer {
+    display: block; position: fixed; top: 0; right: 0; height: 100%;
+    width: 264px; max-width: 82vw; background: #fff; z-index: 2100;
+    transform: translateX(100%); transition: transform .26s ease;
+    box-shadow: -10px 0 34px rgba(15,23,42,.14); padding: 22px 16px;
+    overflow-y: auto; box-sizing: border-box;
+  }
+  .mobile-drawer.open { transform: translateX(0); }
+  .mobile-drawer .drawer-logo { font-size: 18px; font-weight: 800; color: #2563eb; padding: 0 8px 14px; border-bottom: 1px solid #e6edf5; margin-bottom: 12px; }
+  .mobile-drawer .drawer-nav { list-style: none; margin: 0; padding: 0; }
+  .mobile-drawer .drawer-nav li { margin: 0 0 2px; }
+  .mobile-drawer .drawer-nav a { display: block; padding: 11px 14px; border-radius: 12px; color: #0f172a; font-size: 15px; font-weight: 600; text-decoration: none; }
+  .mobile-drawer .drawer-nav a:hover { background: #f3f7fc; color: #2563eb; }
+  .mobile-drawer-mask {
+    display: block; position: fixed; inset: 0; background: rgba(15,23,42,.42);
+    z-index: 2000; opacity: 0; visibility: hidden; transition: opacity .25s ease;
+  }
+  .mobile-drawer-mask.show { opacity: 1; visibility: visible; }
+}
+
+  /* 统一顶栏：与全站 soulsoft 白玻璃顶栏一致 */
+  header.nav, header.site-header {
+    background: rgba(255,255,255,.82) !important;
+    backdrop-filter: blur(16px) saturate(1.4);
+    -webkit-backdrop-filter: blur(16px) saturate(1.4);
+    border-bottom: 1px solid #e4e9f0 !important;
+    box-shadow: 0 8px 28px rgba(15,23,42,.05) !important;
+    height: 58px !important;
+    padding: 0 20px;
+    box-sizing: border-box;
+  }
+  .nav-in, .site-header .inner {
+    max-width: 1200px !important;
+    gap: 26px !important;
+  }
+  .nav .logo, .site-header .logo {
+    color: #2563eb !important;
+    font-size: 19px !important;
+    font-weight: 800 !important;
+    letter-spacing: .5px;
+    text-decoration: none !important;
+    white-space: nowrap;
+  }
+  .nav-links a, .site-nav a {
+    color: #5a6a7a !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    padding: 7px 12px !important;
+    border-radius: 999px !important;
+    text-decoration: none !important;
+    transition: all .15s ease;
+    white-space: nowrap;
+  }
+  .nav-links a:hover, .nav-links a.on,
+  .site-nav a:hover, .site-nav a.on {
+    color: #2563eb !important;
+    background: rgba(37,99,235,.08) !important;
+  }
+  .nav-user a, .header-user a {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 6px;
+    color: #2563eb !important;
+    background: #f4f8ff !important;
+    border: 1px solid #e4e9f0 !important;
+    padding: 7px 16px !important;
+    border-radius: 999px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    text-decoration: none !important;
+    box-shadow: 0 6px 16px rgba(15,23,42,.05);
+    transition: all .15s ease;
+  }
+  .nav-user a:hover, .header-user a:hover {
+    background: #e9f2ff !important;
+    transform: translateY(-1px);
+  }
+
+  /* 装修渲染引擎 */
+  .layout-root { position: relative; max-width: 1200px; margin: 0 auto; padding: 0 24px; box-sizing: border-box; }
+  .layout-root .lr-comp { position: absolute; overflow: hidden; }
+  .lr-text h3 { font-size: 20px; font-weight: 800; margin-bottom: 8px; color: var(--ink); }
+  .lr-text p { font-size: 14px; line-height: 1.8; color: var(--ink2); }
+  .lr-image { width: 100%; height: 100%; object-fit: cover; border-radius: 14px; display: block; }
+  .lr-card { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 22px; height: 100%; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; box-shadow: 0 8px 24px rgba(15,23,42,.05); }
+  .lr-card h4 { font-size: 16px; font-weight: 700; margin-bottom: 8px; color: var(--ink); }
+  .lr-card p { font-size: 13px; color: var(--ink2); line-height: 1.7; }
+  .lr-card:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(15,23,42,.09); }
+  .lr-divider { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; }
+  .lr-divider .ln { width: 94%; border-top: 1px solid var(--line); }
+  .lr-spacer { border-radius: 10px; }
+  .lr-tip { position: absolute; right: 8px; top: 6px; font-size: 11px; color: #94a3b8; background: rgba(255,255,255,.7); padding: 2px 8px; border-radius: 999px; pointer-events: none; z-index: 5; }
+</style>
+<link rel="stylesheet" href="/soulsoft-tools.css">
+<style id="nav-pad">body{padding-top:58px}</style></head>
+<body>
+<div class="ambient"></div><div class="ambient r"></div>
+
+<header class="nav">
+  <div class="nav-in">
+    <a class="logo" href="index.html">清逸的博客</a>
+    <nav class="nav-links" id="navLinks">
+      <a href="index.html" class="on">首页</a>
+      <a href="piano/index.html" data-tool="piano">在线钢琴</a>
+      <a href="music/index.html" data-tool="music">在线乐器</a>      <a href="tiaoyin/index.html" data-tool="tiaoyin">调音器</a>
+      <a href="metronome/index.html" data-tool="metronome">节拍器</a>
+      <a href="article/index.html">文章</a>
+      <a href="aboutme/index.html">关于我</a>
+    </nav>
+    <div class="nav-user" id="navUser"><a href="user/login.html">登录</a></div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-card">
+    <h1>清逸的博客</h1>
+    <p>记录技术成长与日常思考，分享前端、机器学习与硬件折腾路上的点滴。</p>
+    <div class="hero-badges">
+      <span>前端开发</span><span>机器学习</span><span>硬件折腾</span><span>在线工具集</span>
+    </div>
+  </div>
+</section>
+
+<main class="layout">
+  <aside class="side">
+    <div class="sticky">
+      <div class="card profile">
+        <h3>博主</h3>
+        <div class="p-name">清逸</div>
+        <p class="p-desc">热爱代码与乐器的开发者，偶尔写写文章，折腾硬件与 Web 小工具。</p>
+        <div class="p-meta"><span>前端</span><span>机器学习</span><span>开源爱好者</span></div>
+      </div>
+      <div class="card">
+        <h3>分栏</h3>
+        <div class="col-list" id="colList"><span class="col-item on" data-col="">全部<span class="cnt" id="colAllCnt"></span></span></div>
+      </div>
+      <div class="card">
+        <h3>标签</h3>
+        <div class="tag-cloud" id="tagCloud"><span class="loading">加载中</span></div>
+      </div>
+    </div>
+  </aside>
+
+  <section class="content">
+    <div class="sort-tabs">
+      <span class="tab on" data-sort="latest">最新文章</span>
+      <span class="tab" data-sort="hot">热门文章</span>
+    </div>
+    <div id="postList"></div>
+    <div class="pager" id="pager"></div>
+  </section>
+</main>
+
+<section class="tools-sec">
+  <h2>在线工具</h2>
+  <div class="tools-grid" id="toolsGrid"></div>
+</section>
+
+<footer>© 2026 清逸的博客 · 离线镜像 · 由 Doubao 辅助维护</footer>
+
+<script>
+var API_BASE = "/api";
+var state = {tag:"", col:"", page:1, size:6, sort:"latest", total:0};
+
+function esc(s){return (s==null?"":String(s)).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+function fmtDate(s){if(!s)return "";return String(s).slice(0,10);}
+function loadToolsNav(){
+  fetch(API_BASE+"/tools").then(function(r){return r.json();}).then(function(j){
+    if(!j.ok)return;
+    var on={};j.data.forEach(function(t){on[t.key]=1;});
+    document.querySelectorAll("#navLinks a[data-tool]").forEach(function(a){
+      if(!on[a.getAttribute("data-tool")])a.style.display="none";
+    });
+  }).catch(function(){});
+}
+function renderUser(){
+  var u=localStorage.getItem("xw_username");
+  var box=document.getElementById("navUser");
+  if(u){box.innerHTML=esc(u)+' <button class="btn-exit" onclick="logout()">退出</button>';}
+  else{box.innerHTML='<a href="user/login.html">登录</a>';}
+}
+function logout(){localStorage.removeItem("xw_token");localStorage.removeItem("xw_username");renderUser();}
+function loadColumns(){
+  fetch(API_BASE+"/public/columns").then(function(r){return r.json();}).then(function(j){
+    if(!j.ok)return;
+    var html='<span class="col-item on" data-col="">全部<span class="cnt">'+j.data.reduce(function(a,c){return a+c.cnt;},0)+'</span></span>';
+    j.data.forEach(function(c){
+      html+='<span class="col-item" data-col="'+esc(c.name)+'">'+esc(c.name)+'<span class="cnt">'+c.cnt+'</span></span>';
+    });
+    var box=document.getElementById("colList");
+    box.innerHTML=html;
+    box.querySelectorAll(".col-item").forEach(function(x){x.onclick=function(){pickCol(x);};});
+  }).catch(function(){});
+}
+function loadTags(){
+  fetch(API_BASE+"/public/tags").then(function(r){return r.json();}).then(function(j){
+    if(!j.ok)return;
+    if(!j.data.length){document.getElementById("tagCloud").innerHTML='<span class="tag">暂无标签</span>';return;}
+    var html="";
+    j.data.forEach(function(t){
+      html+='<span class="tag" data-tag="'+esc(t.name)+'"><span class="dot" style="background:'+esc(t.color)+'"></span>'+esc(t.name)+'</span>';
+    });
+    var box=document.getElementById("tagCloud");
+    box.innerHTML=html;
+    box.querySelectorAll(".tag").forEach(function(x){x.onclick=function(){pickTag(x);};});
+  }).catch(function(){});
+}
+function pickCol(x){
+  state.col=x.getAttribute("data-col");state.tag="";state.page=1;
+  document.querySelectorAll("#colList .col-item").forEach(function(i){i.classList.toggle("on",i===x);});
+  document.querySelectorAll("#tagCloud .tag").forEach(function(t){t.classList.remove("on");});
+  loadPosts();
+}
+function pickTag(x){
+  var t=x.getAttribute("data-tag");
+  if(state.tag===t){state.tag="";x.classList.remove("on");}
+  else{state.tag=t;x.classList.add("on");document.querySelectorAll("#colList .col-item").forEach(function(i){i.classList.remove("on");});}
+  state.page=1;loadPosts();
+}
+document.querySelectorAll(".tab[data-sort]").forEach(function(t){
+  t.onclick=function(){state.sort=t.getAttribute("data-sort");state.page=1;
+    document.querySelectorAll(".tab[data-sort]").forEach(function(x){x.classList.toggle("on",x===t);});
+    loadPosts();};
+});
+function loadPosts(){
+  var box=document.getElementById("postList");
+  box.innerHTML='<div class="loading"><div class="spin"></div></div>';
+  var q=API_BASE+"/public/posts?page="+state.page+"&size="+state.size;
+  if(state.tag)q+="&tag="+encodeURIComponent(state.tag);
+  if(state.col)q+="&column="+encodeURIComponent(state.col);
+  fetch(q).then(function(r){return r.json();}).then(function(j){
+    if(!j.ok){box.innerHTML='<div class="empty"><b>加载失败</b>接口暂不可用，请稍后再试</div>';return;}
+    state.total=j.data.total;
+    var list=j.data.list.slice();
+    if(state.sort==="hot")list.sort(function(a,b){return b.views-a.views;});
+    if(!list.length){box.innerHTML='<div class="empty"><b>没有匹配的文章</b>换个标签或分栏试试</div>';}
+    else{
+      var html="";
+      list.forEach(function(p){
+        var tags=(p.tags||[]).map(function(t){return '<span class="chip">#'+esc(t)+'</span>';}).join("");
+        var cols=(p.columns||[]).map(function(c){return '<span class="chip col-chip">'+esc(c)+'</span>';}).join("");
+        var href=(p.source_file&&p.source_file.indexOf("a_")===0)?"article/"+p.source_file:"#";
+        html+='<a class="post-card" href="'+href+'"><h2>'+esc(p.title)+'</h2>'+
+          '<div class="post-meta">'+cols+tags+'<span>发布于 '+fmtDate(p.created_at)+'</span><span>阅读 '+p.views+'</span></div>'+
+          '<p>'+esc(p.summary||"")+'</p></a>';
+      });
+      box.innerHTML=html;
+    }
+    renderPager();
+  }).catch(function(){box.innerHTML='<div class="empty"><b>加载失败</b>请确认离线服务已启动</div>';});
+}
+function renderPager(){
+  var totalPages=Math.max(1,Math.ceil(state.total/state.size));
+  var p=document.getElementById("pager");
+  if(totalPages<=1){p.innerHTML="";return;}
+  p.innerHTML='<button data-p="prev" '+(state.page<=1?"disabled":"")+'>上一页</button>'+
+    '<button class="pg-cur">'+state.page+' / '+totalPages+'</button>'+
+    '<button data-p="next" '+(state.page>=totalPages?"disabled":"")+'>下一页</button>';
+  p.querySelectorAll("button[data-p]").forEach(function(b){
+    b.onclick=function(){
+      if(b.disabled)return;
+      state.page+=b.getAttribute("data-p")==="next"?1:-1;
+      loadPosts();window.scrollTo({top:document.querySelector(".content").offsetTop-100,behavior:"smooth"});
+    };
+  });
+}
+function loadTools(){
+  var box=document.getElementById("toolsGrid");
+  fetch(API_BASE+"/tools").then(function(r){return r.json();}).then(function(j){
+    if(!j.ok||!j.data.length){box.innerHTML='<div class="empty"><b>暂无工具</b></div>';return;}
+    var html="";
+    j.data.forEach(function(t){
+      html+='<a class="tool-card" href="'+esc(t.path)+'"><div class="t-name">'+esc(t.name)+'</div><div class="t-desc">'+esc(t.desc||"")+'</div><div class="t-go">立即体验 →</div></a>';
+    });
+    box.innerHTML=html;
+  }).catch(function(){box.innerHTML="";});
+}
+loadToolsNav();renderUser();loadColumns();loadTags();loadPosts();loadTools();
+</script>
+<script>
+/* 清逸的博客 · 页面移动端汉堡 */
+(function () {
+  function build() {
+    var header = document.querySelector('header.nav');
+    if (!header) return false;
+    if (document.querySelector('.mobile-hamburger')) return true;
+    var btn = document.createElement('button');
+    btn.className = 'mobile-hamburger';
+    btn.type = 'button';
+    btn.setAttribute('aria-label', '菜单');
+    var bar = document.createElement('span');
+    btn.appendChild(bar);
+    var mask = document.createElement('div');
+    mask.className = 'mobile-drawer-mask';
+    var drawer = document.createElement('div');
+    drawer.className = 'mobile-drawer';
+    var logo = document.createElement('div');
+    logo.className = 'drawer-logo';
+    logo.textContent = '清逸的博客';
+    var nav = document.createElement('ul');
+    nav.className = 'drawer-nav';
+    var srcNav = header.querySelector('.nav-links');
+    if (srcNav) {
+      srcNav.querySelectorAll('a').forEach(function (a) {
+        var li = document.createElement('li');
+        var na = document.createElement('a');
+        na.href = a.getAttribute('href') || '#';
+        na.textContent = a.textContent.trim();
+        li.appendChild(na);
+        nav.appendChild(li);
+      });
+    }
+    drawer.appendChild(logo);
+    drawer.appendChild(nav);
+    document.body.appendChild(btn);
+    document.body.appendChild(mask);
+    document.body.appendChild(drawer);
+    function toggle(open) {
+      var willOpen = (open === undefined) ? !drawer.classList.contains('open') : open;
+      drawer.classList.toggle('open', willOpen);
+      mask.classList.toggle('show', willOpen);
+      btn.classList.toggle('active', willOpen);
+      document.body.style.overflow = willOpen ? 'hidden' : '';
+    }
+    btn.addEventListener('click', function (e) { e.stopPropagation(); toggle(); });
+    mask.addEventListener('click', function () { toggle(false); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') toggle(false); });
+    return true;
+  }
+  function start() {
+    if (build()) return;
+    var t = setInterval(function () { if (build()) clearInterval(t); }, 500);
+    setTimeout(function () { clearInterval(t); }, 15000);
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', start);
+  } else { start(); }
+})();
+</script>
+
+<!-- 装修渲染引擎（共享） -->
+<script src="js/layout-engine.js"></script>
+<script>initLayoutEngine('home');</script>
+<script src="js/header-fix.js"></script>
+</body>
+</html>

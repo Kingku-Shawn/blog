@@ -1,0 +1,255 @@
+﻿<!DOCTYPE html>
+
+<html lang="zh-cn">
+<head>
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1" />
+	<!-- @fragment_top Start-->
+<meta charset="UTF-8">
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>QQ帐号安全登录</title>
+<meta name="keywords" content="QQ互联、QQ登录、安全登录、网站接入、腾讯开放平台">
+<meta name="description" content="接入QQ互联，可实现与腾讯各项服务的无缝连接，安全帐号登录体系，用户动态同步腾讯各社交平台，调用腾讯公司各业务服务。">
+<meta name="copyright" content="Tencent" >
+<meta name="author" content="rtx://tencent/sng/yuanyan" >
+<link rel="Shortcut Icon" href="https://imgcache.qq.com/qzone/openapi/favicon.ico?t=20130219" type="image/x-icon">
+<link rel="icon" href="https://imgcache.qq.com/qzone/openapi/favicon.ico?t=20130219" type="image/x-icon">
+<link href="https://imgcache.qq.com/open/connect/widget/pc/login/qlogin_v2.min.css?max_age=2592000&v=20210112" rel="stylesheet">
+<script type="text/javascript">
+    window.__start = +new Date();
+    
+    var _speedTiming = [+new Date];
+    // 加载主题脚本
+    var getUrlParam =  function ( name , noDecode ) {
+			var re = new RegExp( '(?:\\?|#|&)' + name + '=([^&]*)(?:$|&|#)',  'i' ), m = re.exec( window.location.href );
+			var ret = m ? m[1] : '' ;
+			return !noDecode ? decodeURIComponent( ret ) : ret;
+		};
+    var theme = getUrlParam('connect_theme');
+    if (/^\d+$/.test(theme)) {
+      // 创建link元素
+      var linkElement = document.createElement('link');
+      
+      // 设置link元素的属性
+      linkElement.rel = 'stylesheet';
+      linkElement.type = 'text/css';
+      linkElement.href = 'https://qq-web.cdn-go.cn/monorepo/latest/ptlogin/v4/style/theme/theme_' + theme + '.css';
+      
+      // IE8 兼容：获取 head 元素
+      var head = document.getElementsByTagName('head')[0];
+      
+      // 添加加载失败的处理（可选）
+      linkElement.onerror = function() {
+        console.error('Failed to load theme: ' + 'theme');
+      };
+      
+      // 添加到 head
+      head.appendChild(linkElement);      
+    }
+</script>
+<style type="text/css">
+/* 竖版样式 */
+.lay_top.hide {
+  display: none;
+}
+#combine_page.vertical {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+#combine_page.vertical .page_login {
+  width: 360px;
+}
+
+#combine_page.vertical .lay_login_form {
+  position: relative;
+  margin: 0px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#combine_page.vertical .lay_login_form::after {
+    content: '';
+    height: 1px;
+    background-color: rgba(0, 0, 0, 0.04);
+    width: 250px;
+    position: absolute;
+    bottom: 0px;
+    left: 50%;
+    margin-left: -125px;
+}
+
+#combine_page.vertical .page_accredit {
+    margin-top: 0px;
+    border-left: none;
+    height: auto;
+}
+
+#combine_page.vertical .page_accredit .lay_main {
+    margin-left: 0px;
+}
+#combine_page.vertical .page_accredit .lay_main .lay_accredit_con {
+    margin-top: 0px;
+}
+
+#combine_page.vertical .accredit_info {
+  margin-top: 10px;
+}
+#combine_page.vertical .accredit_info .accredit_info_op li {
+  margin-bottom: 10px;
+}
+</style>
+<!-- @fragment_top End -->
+
+</head>
+<body>
+<!-- @header Start-->
+<div class="lay_top" id="lay_top">
+    <div class="lay_top_inner">
+        <h1 class="logo text_hide">QQ登录</h1>
+        <div class="lat_top_other">
+            <a href="https://connect.qq.com" target="_blank" title="什么是QQ登录"><i class="icon_help_white"></i>QQ登录</a>
+            <span class="line">|</span>
+            <a href="https://connect.qq.com/toc/auth_manager?from=auth" id="auth_manager_link" target="_blank" title="登录授权管理">授权管理</a>
+            <span class="line">|</span>
+            <a href="https://connect.qq.com/manage" target="_blank" title="申请接入">申请接入</a>
+        </div>
+    </div>
+</div>
+<!-- @header End -->
+
+<div id="combine_page">
+  <div class="page_login combine_page_children float_left border_right">
+    <div class="lay_login_form">
+      
+      <iframe frameborder="0" width="407" height="331" id="ptlogin_iframe" name="ptlogin_iframe" src="https://graph.qq.com/oauth2.0/show?which=Login&amp;display=pc&amp;response_type=code&amp;client_id=101446864&amp;redirect_uri=https%3A%2F%2Fwww.shawn.com%2Fauth%2Fqq%2Fcallback%3Fnext%3D%2Fuser%2Flogin%3Fnext%3Dundefined%26bind%3D" allow="local-network-access"></iframe>
+      
+    </div>
+  </div>
+  <div class="page_accredit combine_page_children float_left border_left">
+    <div class="lay_main" id="lay_main">
+      <div class="lay_accredit_con">
+        <p class="cnt_wording"></p>
+        <div class="accredit_info" id="accredit_info">
+          <ul class="accredit_info_op">
+            <li class="select_all_li">
+              <input type="checkbox" id="select_all" class="checkbox oauth_checkbox_all" hidefocus="true" checked="checked">
+              <label class="oauth_item_title" for="select_all">全选 <p style="margin-left: 8px; display: inline-block;" class="app_site_wording"><a class="accredit_site" id="accredit_site_link" href="../index.html" target="_blank">茜文网</a>将获取以下权限：</p>
+              </label>
+            </li>
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            <li>
+              <input name="api_choose" hidefocus="true" type="checkbox" class="checkbox oauth_checkbox" id="item_1010" value="1010" title="默认授权 不可更改" checked disabled />
+              <label  for="item_1010" class="oauth_item_title">使用你的QQ头像、昵称信息</label>
+            </li>
+            
+          </ul>
+        </div>
+        <div class="oauth_tips_div">
+          <p class="oauth_tips">
+            授权即同意<a href="https://ti.qq.com/agreement/index.html" target="_blank">服务协议</a>和<a href="https://rule.tencent.com/rule/preview/3fd52bde-6555-453b-9ab8-c5f1f3d22c62" target="_blank">QQ隐私保护指引</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    _speedTiming.push(+new Date);
+    var Q = {};
+    Q.authsCount = 1;
+    Q.isNeedLogin = false;
+    Q.crtDomain = '../../www.shawn.com/';
+    Q.agree = function(){
+        window.isAgreed = true;
+    };
+    Q.logout = function(){
+        window.isLogouted = true;
+    };
+    
+    Q.isNeedLogin = true;
+    Q.getParameter = function getParameter(name) {
+        var r = new RegExp("(\\?|#|&)" + name + "=([^&#]*)(&|#|$)"), m = location.href.match(r);
+        return decodeURIComponent(!m ? "" : m[2]);
+    };
+    Q.ptlogin2 = function(){
+        var s_url = 'https://graph.qq.com/oauth2.0/login_jump';
+        s_url = 'https://xui.ptlogin2.qq.com/cgi-bin/xlogin?appid=716027609&daid=383&style=33&login_text=%E7%99%BB%E5%BD%95&hide_title_bar=1&hide_border=1&target=self&s_url=' + encodeURIComponent(s_url);
+
+        var clientId = Q.getParameter('client_id') || '';
+        clientId && (s_url += ("&pt_3rd_aid="+encodeURIComponent(clientId)));
+
+        var ptDisablePwd = Q.getParameter('pt_disable_pwd') || '';
+		    ptDisablePwd && (s_url += ("&pt_disable_pwd="+encodeURIComponent(ptDisablePwd)));
+
+        var dmHost = ((Q.crtDomain || Q.getParameter('redirect_uri') || '').match(/http:\/\/([^/]*)\/?/i) || [])[1] || '';
+        var feed_back_link = 'https://support.qq.com/products/77942?customInfo='+encodeURIComponent(dmHost) + '.appid' + clientId;
+        s_url += (
+          '&pt_feedback_link=' + encodeURIComponent(feed_back_link)
+          + '&theme=' + (Q.getParameter('theme') || '2')
+          + '&verify_theme=' + (Q.getParameter('verify_theme') || '')
+        );
+        document.getElementById('ptlogin_iframe').src = s_url;
+    };
+    Q.ptlogin2();
+    
+    
+    function ptlogin2_onResize(w, h) {
+    	var f = document.getElementById('ptlogin_iframe');
+    	f.width = w;
+    	f.height = h;
+    }
+    if (!window.JSON) {
+    	document.write('<script type="text/javascript" src="https://imgcache.qq.com/open/operate/mlib/widget/json-for-ie.js"><\/script>');
+    }
+</script>
+
+<!--@fragment_bottom Start-->
+<script src="https://imgcache.qq.com/c/=/open/connect/widget/pc/login/pt_adapt.js,qlogin_v2.js?v=20181229" charset="UTF-8"></script>
+<script type="text/javascript">
+var MAX = 688;
+var getClientWidth = function(doc) {
+    var _doc = doc || document;
+    return _doc.compatMode == 'CSS1Compat' ? _doc.documentElement.clientWidth : _doc.body.clientWidth;
+}
+var MIN = 370;
+var maxWidth = getClientWidth(document);
+if (maxWidth <= MAX) {
+    var combinePage = document.getElementById('combine_page');
+    var topHeader = document.getElementById('lay_top');
+    var iframe = document.getElementById('ptlogin_iframe');
+    var originWidth = iframe.width;
+    var originHeight = iframe.height;
+    
+    if (maxWidth <= MIN) {
+        combinePage.classList.add('vertical');
+        topHeader.classList.add('hide');
+        iframe.width = 360;
+        iframe.height = 318;
+    } else {
+        combinePage.classList.remove('vertical');
+        topHeader.classList.remove('hide');
+        iframe.width = originWidth;
+        iframe.height = originHeight;
+    }
+}
+</script>
+<!--@fragment_bottom End -->
+
+
+</body>
+</html>
